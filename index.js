@@ -5,12 +5,11 @@ const app = express();
 // Serve static files
 app.use(express.static('./'));
 
-// Serve game.html instead of index.html
+// Update this line to use index.html instead of game.html
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'game.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Start server
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
