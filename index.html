@@ -533,10 +533,9 @@
 
 
 
-
-        function updateLeaderboard() {
-            log('Updating leaderboard...');
-            fetch('https://click-game-kappa.vercel.app/api/leaderboard')
+function updateLeaderboard() {
+    log('Updating leaderboard...');
+    fetch('https://click-game-kappa.vercel.app/api/leaderboard')
                 .then(response => response.json())
                 .then(leaders => {
                     log('Leaderboard data received');
