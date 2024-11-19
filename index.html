@@ -1,63 +1,764 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Super Simple Click Game</title>
+    <title>Daily Click Game</title>
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-        }
-        #gameContainer {
-            text-align: center;
+            font-family: "Segoe UI", Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
             padding: 20px;
-            background-color: white;
+            text-align: center;
+            background-color: #0a0a1a;
+            color: #00ffff;
+            line-height: 1.6;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            color: #fff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            font-size: 2.5rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 30px 0;
+        }
+
+        .game-container {
+            background: linear-gradient(45deg, #001428, #002040);
+            border: 2px solid #00ffff;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin: 20px auto;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
         }
-        #score {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #333;
+
+        .stats {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 400px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
         }
-        #clickButton {
-            padding: 20px 40px;
-            font-size: 24px;
+
+        .stats-label {
+            color: #00ffff;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+
+        .stats-value {
+            color: #ff69b4;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+            margin: 5px 0;
+        }
+
+        .click-button {
+            padding: 25px 50px;
+            font-size: 1.2rem;
+            background: linear-gradient(45deg, #001428, #002040);
+            color: #fff;
+            border: 2px solid #00ffff;
+            border-radius: 8px;
             cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(0, 255, 255, 0.5); }
+            100% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.3); }
+        }
+
+        .click-button:hover {
+            transform: scale(1.05);
+        }
+
+        #timeRemaining {
+            color: #ff69b4;
+            font-size: 1.1rem;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            display: inline-block;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .leaderboard {
+            background: linear-gradient(45deg, #001428, #002040);
+            border: 2px solid #00ffff;
             border-radius: 10px;
-            transition: transform 0.1s;
+            padding: 30px;
+            margin: 40px auto;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
         }
-        #clickButton:hover {
-            background-color: #45a049;
+
+        .leaderboard h2 {
+            color: #fff;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+            font-size: 1.8rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin: 0 0 20px 0;
         }
-        #clickButton:active {
-            transform: scale(0.95);
+
+        .leaderboard table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
         }
+
+        .leaderboard th, .leaderboard td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        .leaderboard th {
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+        }
+
+        .leaderboard tr:hover td {
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .current-player {
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .rank-1 td {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }#messages {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.8rem;
+            max-height: 150px;
+            overflow-y: auto;
+            color: rgba(0, 255, 255, 0.7);
+        }
+
+        /* Auth Button Styles */
+        .auth-buttons {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .auth-btn {
+            padding: 10px 25px;
+            font-size: 1rem;
+            background: linear-gradient(45deg, #001428, #002040);
+            color: #fff;
+            border: 2px solid #00ffff;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .auth-btn:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .auth-btn.login {
+            border-color: #ff69b4;
+            color: #ff69b4;
+        }
+
+        .auth-btn.login:hover {
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #001428, #002040);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            z-index: 1001;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+
+        .modal.active,
+        .modal-overlay.active {
+            display: block;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: #fff;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #00ffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #ff69b4;
+            transform: scale(1.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            color: #00ffff;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        .modal-footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .modal-footer a {
+            color: #ff69b4;
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .modal-footer a:hover {
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }/* Message System Styles */
+        .message-overlay {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .message {
+            padding: 15px 25px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            animation: slideIn 0.5s ease-out;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .message.success {
+            background: rgba(0, 20, 40, 0.9);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .message.error {
+            background: rgba(0, 20, 40, 0.9);
+            border: 2px solid #ff69b4;
+            color: #ff69b4;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        .welcome-text {
+    color: #00ffff;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    margin-right: 20px;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <div id="score">0</div>
-        <button id="clickButton">Click Me!</button>
+    <div class="message-overlay" id="messageContainer"></div>
+
+    <div class="auth-buttons">
+        <button class="auth-btn" onclick="showModal('registerModal')">Create Account</button>
+        <button class="auth-btn login" onclick="showModal('loginModal')">Login</button>
+    </div>
+
+    <h1>Daily Click Game</h1>
+
+    <div class="game-container">
+        <div class="stats">
+            <div class="stats-label">Player</div>
+            <div class="stats-value" id="playerName">Guest</div>
+            <div class="stats-label">Score</div>
+            <div class="stats-value" id="score">0</div>
+        </div>
+
+        <button class="click-button" onclick="handleClick()">Initiate Sequence</button>
+        <div id="timeRemaining"></div>
+    </div>
+
+    <div class="leaderboard">
+        <h2>Global Rankings</h2>
+        <table id="leaderboardTable">
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Score</th>
+            </tr>
+        </table>
+    </div>
+
+    <div id="messages"></div>
+
+    <!-- Modal System -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-header">
+            <h3 class="modal-title">Create Account</h3>
+            <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
+        </div>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="registerUsername">Username</label>
+                <input type="text" id="registerUsername" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" required>
+            </div>
+            <button type="submit" class="auth-btn">Create Account</button>
+            <div class="modal-footer">
+                <a onclick="switchModal('registerModal', 'loginModal')">Already have an account? Login</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-header">
+            <h3 class="modal-title">Access Portal</h3>
+            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+        </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginUsername">Username</label>
+                <input type="text" id="loginUsername" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit" class="auth-btn login">Login</button>
+            <div class="modal-footer">
+                <a onclick="switchModal('loginModal', 'registerModal')">Need an account? Register</a>
+            </div>
+        </form>
     </div>
 
     <script>
-        let score = 0;
-        const scoreDisplay = document.getElementById('score');
-        const button = document.getElementById('clickButton');
-        
-        button.addEventListener('click', () => {
-            score += 1;
-            scoreDisplay.textContent = score;
+        function log(message) {
+            const messages = document.getElementById('messages');
+            messages.innerHTML += new Date().toLocaleTimeString() + ": " + message + "<br>";
+            console.log(message);
+        }
+
+        const guestId = 'Guest_' + Math.floor(Math.random() * 10000);
+
+        window.onload = function() {
+            log('Page loading...');
+            try {
+                document.getElementById('playerName').textContent = guestId;
+                log('Guest ID set: ' + guestId);
+                updateLeaderboard();
+                log('Initial setup complete');
+            } catch (error) {
+                log('Error during initialization: ' + error.message);
+            }
+        };
+
+
+
+
+
+
+
+
+        function handleClick() {
+    log('Click detected');
+    
+    // Determine if user is logged in or guest
+    const endpoint = isAuthenticated ? '/api/score' : '/api/guest/score';
+    const payload = isAuthenticated ? {} : { guestId };
+    
+    fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            log('Error: ' + data.error);
+            if (data.nextClickTime) {
+                const next = new Date(data.nextClickTime);
+                const now = new Date();
+                const hours = Math.floor((next - now) / (1000 * 60 * 60));
+                const minutes = Math.floor(((next - now) % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById('timeRemaining').textContent = 
+                    `Next sequence available in: ${hours}H ${minutes}M`;
+            } else {
+                document.getElementById('timeRemaining').textContent = data.error;
+            }
+        } else {
+            log('Score updated: ' + data.totalScore);
+            document.getElementById('score').textContent = data.totalScore;
+            document.getElementById('timeRemaining').textContent = '';
+            updateLeaderboard();
+        }
+    })
+    .catch(error => {
+        log('Error: ' + error.message);
+    });
+}
+
+
+
+
+        function updateLeaderboard() {
+            log('Updating leaderboard...');
+            fetch('/api/leaderboard')
+                .then(response => response.json())
+                .then(leaders => {
+                    log('Leaderboard data received');
+                    const table = document.getElementById('leaderboardTable');
+                    
+                    table.innerHTML = `
+    <tr>
+        <th>Rank</th>
+        <th>Player</th>
+        <th>Score</th>
+        <th>Chain Days</th>
+        <th>Chain Bonus</th>
+    </tr>
+`;
+                    leaders.forEach((leader, index) => {
+                        const row = table.insertRow(-1);
+                        const isCurrentPlayer = leader.username === guestId;
+                        
+                        if (isCurrentPlayer) {
+                            row.classList.add('current-player');
+                        }
+                        if (index === 0) {
+                            row.classList.add('rank-1');
+                        }
+                        row.insertCell(0).textContent = index + 1;
+row.insertCell(1).textContent = leader.username;
+row.insertCell(2).textContent = leader.score;
+row.insertCell(3).textContent = leader.isGuest ? '-' : (leader.chainDays || 0);
+row.insertCell(4).textContent = leader.isGuest ? '-' : `${(leader.chainDays || 0) * 10}%`;
+                    });
+                })
+                .catch(error => {
+                    log('Leaderboard error: ' + error.message);
+                });
+        }
+
+        function showModal(modalId) {
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function switchModal(fromModalId, toModalId) {
+            closeModal(fromModalId);
+            showModal(toModalId);
+        }
+
+        function showMessage(text, type = 'success') {
+            const container = document.getElementById('messageContainer');
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.textContent = text;
+            container.appendChild(message);
+
+            setTimeout(() => {
+                message.classList.add('fade-out');
+                setTimeout(() => {
+                    container.removeChild(message);
+                }, 500);
+            }, 3000);
+        }
+
+        // Close modal when clicking overlay
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    closeModal(activeModal.id);
+                }
+            }
         });
+
+
+
+
+   
+
+
+
+
+
+
+
+    
+    // Auth-related functions
+    let isAuthenticated = false;
+let currentUser = null;
+
+function checkAuthStatus() {
+    fetch('/api/auth/status')
+        .then(response => response.json())
+        .then(data => {
+            isAuthenticated = data.authenticated;
+            currentUser = data.username;
+            updateUIForAuth();
+        })
+        .catch(error => {
+            console.error('Auth check failed:', error);
+        });
+}
+
+function logout() {
+    fetch('/api/logout', {
+        method: 'POST'
+    })
+    .then(response => {
+        if (response.ok) {
+            isAuthenticated = false;
+            currentUser = null;
+            showMessage('Logged out successfully', 'success');
+            window.location.reload();
+        }
+    })
+    .catch(error => {
+        showMessage('Logout failed', 'error');
+    });
+}
+
+function updateUIForAuth() {
+    const authButtons = document.querySelector('.auth-buttons');
+    if (isAuthenticated) {
+        authButtons.innerHTML = `
+            <span class="welcome-text">Welcome, ${currentUser}!</span>
+            <button class="auth-btn" onclick="logout()">Logout</button>
+        `;
+        // Update player name in game area
+        document.getElementById('playerName').textContent = currentUser;
+    } else {
+        // Reset to guest if logged out
+        document.getElementById('playerName').textContent = guestId;
+    }
+}
+
+// Add auth check on page load
+document.addEventListener('DOMContentLoaded', function() {
+    checkAuthStatus();
+});
+
+
+
+
+
+
+
+
+
+        // Test messages
+        showMessage('Welcome to the game!', 'success');
+        setTimeout(() => {
+            showMessage('This is an error message', 'error');
+        }, 1000);
+    
+ 
+
+
+
+
+    
+    
+        // Add form handlers
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const username = document.getElementById('registerUsername').value;
+    const password = document.getElementById('registerPassword').value;
+
+    try {
+        const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            showMessage('Account created successfully!', 'success');
+            closeModal('registerModal');
+            window.location.reload();
+        } else {
+            showMessage(data.error || 'Registration failed', 'error');
+        }
+    } catch (error) {
+        showMessage('Error creating account', 'error');
+    }
+});
+
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            showMessage('Login successful!', 'success');
+            closeModal('loginModal');
+            window.location.reload();
+        } else {
+            showMessage(data.error || 'Login failed', 'error');
+        }
+    } catch (error) {
+        showMessage('Error logging in', 'error');
+    }
+});
+    
+    
+    
+    
+    
+    
     </script>
 </body>
 </html>
