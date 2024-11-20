@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Middleware
-app.use(express.static('./'));
+
 app.use(express.json());
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -290,6 +290,11 @@ app.post('/api/convert-guest', async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
+});
+
+app.use(express.static(path.join(__dirname)));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
